@@ -5,12 +5,12 @@
 // HELPER OBJECTS //
 enum GameStatus 
 {
-    lose,
-    in_progress,
-    win
+    LOSE,
+    IN_PROGRESS,
+    WIN
 };
 
-struct item 
+struct Item 
 {
     std::string name;
     int id;
@@ -18,12 +18,12 @@ struct item
 
 enum ActionType 
 {
-    progressive, // Progression actions - take the user to the next step
-    fatal, // Fatal actions - take an action that kills the user, they start over or maybe at a checkpoint? --> maybe whether they've had to restart or not is criteria for some  secret ending
-    cyclic, // Cyclic actions - cause nothing to happen and keeps the user in the same place
-    spec_cyclic // Special Cyclic actions - nothing appears to happen, but if done enough times, something interesting happens
+    PROGRESSIVE, // Progression actions - take the user to the next step
+    FATAL, // Fatal actions - take an action that kills the user, they start over or maybe at a checkpoint? --> maybe whether they've had to restart or not is criteria for some  secret ending
+    CYCLIC, // Cyclic actions - cause nothing to happen and keeps the user in the same place
+    SPEC_CYCLIC // Special Cyclic actions - nothing appears to happen, but if done enough times, something interesting happens
 };
-struct action
+struct Action
 {
     std::string optionMessage;
     std::string resultMessage;
@@ -50,10 +50,10 @@ bool isNumber(std::string s)
 // INVENTORY
 // Intialize the player's inventory
 // The user should be able to collect items by engulfing them
-std::vector<struct item> items = {};
+std::vector<struct Item> items = {};
 
 // PROGRESS VARS
-GameStatus gameStatus = in_progress; // The game status is here
+GameStatus gameStatus = IN_PROGRESS; // The game status is here
 int progress = 0; // Saves a player's progress
 
 
@@ -69,14 +69,14 @@ void PrintDebugInfo ()
 
 void Setup() {
     // An initial item that the player doens't know they have
-    item secretItem;
+    Item secretItem;
     secretItem.name = "Secret Starting Item";
     secretItem.id = -99;
     items.push_back(secretItem);
     return;
 }
 
-void PlayerAction(std::vector<struct action> actions) {
+void PlayerAction(std::vector<struct Action> actions) {
     int actionInd = -1;
 
     // Action Loop
@@ -102,18 +102,18 @@ void PlayerAction(std::vector<struct action> actions) {
         }
 
         // Choose an outcome
-        action selectedAction = actions.at(actionInd);
+        Action selectedAction = actions.at(actionInd);
         std::cout << std::endl;
         std::cout << selectedAction.resultMessage << "\n\n";
 
         // Update the state based on type of action and continue
         std::cout << BREAKER << std::endl;
-        if (selectedAction.actType == progressive)
+        if (selectedAction.actType == PROGRESSIVE)
         {
             return;
-        } else if (selectedAction.actType == fatal)
+        } else if (selectedAction.actType == FATAL)
         {
-            gameStatus = lose;
+            gameStatus = LOSE;
             return;
         }
     }
@@ -132,27 +132,29 @@ void PlayGame()
 
     // Action Sequence 1 //
     // Define Actions
-    struct action action1;
+    struct Action action1;
     action1.optionMessage = "push down on the spike and hoist yourself off of it.";
     action1.resultMessage = "You struggle to push your body off the spike...\n\nThe spike is halfway out of your body when you notice that the black void that once supported your weight is now gone. With your feet freely dangling, you no longer want to push yourself off the spike. Panicking you remove your hands from the green mass. The end promptly snaps, and you begin to fall through the void...";
-    action1.actType = progressive;
-    struct action action2;
+    action1.actType = PROGRESSIVE;
+    struct Action action2;
     action2.optionMessage = "kick your feet and yell at the void.";
     action2.resultMessage = "You struggle against the green spike that penetrates your body... It doesn't seem to mind. You scream hysterically at the void. It stays silent...";
-    action2.actType = cyclic;
-    struct action action3;
+    action2.actType = CYCLIC;
+    struct Action action3;
     action3.optionMessage = "take a nap.";
     action3.resultMessage = "With no sensation of pain, no dripping blood, or sights to intrigue, you find your eyes begin to close. The insomnia that has plagued you all your life takes hold. The black void becomes darker...\n\nWhen you open your eyes, you find yourself at a desk in a small gray cubicle. The bulky computer in front of you displays the Microsoft Windows 95 logo. You glance around for a moment, Tom is glaring at you. He's wearing overalls. You turn your head to back to your computer and open up Excel. You immediately save the file out of habit. You sigh and name the file 'Spreadsheet.xls'. Dreams are scarygit, you think to yourself.";
-    action3.actType = fatal;
+    action3.actType = FATAL;
     // Add actions and call Player Action
-    std::vector<struct action> actions;
+    std::vector<struct Action> actions;
     actions.push_back(action1);
     actions.push_back(action2);
     actions.push_back(action3);
     PlayerAction(actions);
 
+    // Action Sequence 2 //
+
     // Check for game end
-    if (gameStatus == lose)
+    if (gameStatus == LOSE)
     {
         PrintDebugInfo();
         return;
