@@ -2,51 +2,14 @@
 #include <string> 
 #include <vector>
 
-// HELPER OBJECTS //
-enum GameStatus 
-{
-    LOSE,
-    IN_PROGRESS,
-    WIN
-};
+#include "engine.h"
+#include "engine-objs.h"
+#include "utils.h"
 
-struct Item 
-{
-    std::string name;
-    int id;
-};
-
-enum ActionType 
-{
-    PROGRESSIVE, // Progression actions - take the user to the next step
-    FATAL, // Fatal actions - take an action that kills the user, they start over or maybe at a checkpoint? --> maybe whether they've had to restart or not is criteria for some  secret ending
-    CYCLIC, // Cyclic actions - cause nothing to happen and keeps the user in the same place
-    SPEC_CYCLIC // Special Cyclic actions - nothing appears to happen, but if done enough times, something interesting happens
-};
-struct Action
-{
-    std::string optionMessage;
-    std::string resultMessage;
-    ActionType actType; 
-};
-
-
-// UTIL METHODS //
-// Returns true if s is a number else false 
-bool isNumber(std::string s) 
-{ 
-    for (int i = 0; i < s.length(); i++) 
-        if (isdigit(s[i]) == false) 
-            return false; 
-  
-    return true; 
-} 
-
-
-// GLOBAL STATE // 
 // std::string UTILS
-    const std::string BREAKER = "___________________________________________________";
+const std::string BREAKER = "___________________________________________________";
 
+// GAME STATE // 
 // INVENTORY
 // Intialize the player's inventory
 // The user should be able to collect items by engulfing them
@@ -85,7 +48,7 @@ void PlayerAction(std::vector<struct Action> actions) {
         std::cout << "How do you proceed?\n\n";
 
         // Tell the player possible actions
-        for (int i = 0; i < actions.size(); i++)
+        for (int i = 0; (unsigned) i < actions.size(); i++)
         {
              std::cout << i + 1 << ". " << actions.at(i).optionMessage << std::endl;
         }
@@ -121,6 +84,8 @@ void PlayerAction(std::vector<struct Action> actions) {
 
 void PlayGame() 
 {
+    Setup();
+
     // Print introduction scene
     std::cout << "You've woken up.\n\n";
     std::cout << "Everything is black. There is no sound. You cannot move...\n\n";
@@ -162,11 +127,4 @@ void PlayGame()
 
     PrintDebugInfo();
     return;
-}
-
-int main()
-{
-    Setup();
-    PlayGame();
-    return 0;
 }
