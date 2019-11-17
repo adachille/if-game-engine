@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string> 
 #include <vector>
+#include <chrono>
+#include <thread>
 
 #include "engine.h"
 #include "engine-objs.h"
@@ -82,24 +84,57 @@ void PlayerAction(std::vector<struct Action> actions) {
     }
 }
 
+void StorySequence(const std::vector<std::string> storyLines, const unsigned charsPerSecond=20, const unsigned timeBetweenLines=1000, const unsigned newLines=2) {
+    // Cap the speed of printing at 1000 chars per second
+    unsigned ms_per_char;
+    if (charsPerSecond > 1000) 
+        ms_per_char = 1;
+    else 
+        ms_per_char = 1000 / charsPerSecond;
+
+    // Iterate through lines
+    for (unsigned lineInd = 0; lineInd < storyLines.size(); lineInd++) 
+    {
+        // Print each char in line and then wait for ms_per_char time
+        std::string curLine = storyLines.at(lineInd);
+        for (unsigned charInd = 0; charInd < curLine.size(); charInd++)
+        {
+            std::cout << curLine[charInd];
+            std::this_thread::sleep_for(std::chrono::milliseconds(ms_per_char));
+        }
+
+        // Print the newlines between story lines
+        for (unsigned i = 0; i < newLines; i++) 
+        {
+            std::cout << std::endl;
+        }
+
+        // Wait between each line
+        std::this_thread::sleep_for(std::chrono::milliseconds(timeBetweenLines));
+    }
+}
+
 void PlayGame() 
 {
     Setup();
 
     // Story Sequence 1 //
-    std::cout << "You've woken up.\n\n";
-    std::cout << "Everything around you is pitch black, only your body is illuminated. You can see your arms, legs, and feet but you are completely paralyzed and cannot move. There is only silence and stillness...\n\n";
-    std::cout << "A short distance in front of you, a small dark green circle appears. The dot slowly grows larger and you begin to notice an almost imperceptible vibration... It grows in movement until it reaches tremble... and finally a boil. From the stew, You see three dark green spikes slowly emerge from the vigorously churning bubbles...\n\n";
-    std::cout << "The spikes grow upwards until their weight causes them to begin twisting in on themselves, like overgrown nails...\n\n";
-    std::cout << "The mass is now forced outwards by its own growth, towards you... It inches closer and closer, but you cannot move...\n\n";
-    std::cout << "You look down as the first green spike gently touches your chest. It continues moving, pushing it's edge into your body with no hesitation. There is no sound. There is no pain nor blood. The spike slowly pushes its way forward and out through your back. But, you notice the boil start to die down, and with it, the spike's growth grinds to a halt. You feel it's slow vibration in your chest... Finally, it comes to stop.\n\n";
-    std::cout << "The spike is only sticking a couple inches out of your back. You suddenly feel control flow back into your body...\n\n";
+    std::vector<std::string> storyLines;
+    storyLines.push_back("You've woken up.");
+    storyLines.push_back("Everything around you is pitch black, only your body is illuminated. You can see your arms, legs, and feet but you are completely paralyzed and cannot move. There is only silence and stillness...");
+    storyLines.push_back("A short distance in front of you, a small dark green circle appears. The dot slowly grows larger and you begin to notice an almost imperceptible vibration... It's movement grows more violent as it reaches a tremble... and finally a boil. From the stew, You see three dark green spikes slowly emerge from the vigorously churning bubbles...");
+    storyLines.push_back("The spikes grow upwards rapidly and begin to twist in on themselves, like overgrown nails...");
+    storyLines.push_back("The mass is now forced outwards by its own growth, towards you... It inches closer and closer, but you cannot move...");
+    storyLines.push_back("You look down as the first green spike gently touches your chest. It continues moving, pushing it's edge into your body with no resistance. There is no sound. There is no pain nor blood. The spike slowly pushes its way forward and out through your back... You notice the boil start to die down, and with it, the spike's growth. You feel it's slow vibration in your chest... Finally, it comes to stop.");
+    storyLines.push_back("You suddenly feel control flow back into your body...");
+    StorySequence(storyLines);
+
 
     // Action Sequence 1 //
     // Define Actions
     struct Action action1;
-    action1.optionMessage = "push down on the spike and hoist yourself off of it.";
-    action1.resultMessage = "You struggle to push your body off the spike...\n\n The spike is halfway out of your body when it suddenly snaps, and you begin to fall through the void...";
+    action1.optionMessage = "throw your fists down on the spike.";
+    action1.resultMessage = "Lifting your hands high over your head, you hurl yours fists at the spike. You feel nothing as the spike shatters. Whatever was holding you in place before is no longer there and you begin to fall through the void...";
     action1.actType = PROGRESSIVE;
     struct Action action2;
     action2.optionMessage = "kick your feet and yell at the void.";
